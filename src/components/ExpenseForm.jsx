@@ -20,6 +20,8 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancel, onSucc
   const [amount, setAmount] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('Cash')
   const [notes, setNotes] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(null)
 
   useEffect(() => {
     if (editingExpense) {
@@ -37,31 +39,45 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancel, onSucc
       setPaymentMethod('Cash')
       setNotes('')
     }
+    setSubmitError(null)
   }, [editingExpense])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!category?.trim()) return
-    onSubmit({
-      date,
-      category,
-      description: description.trim(),
-      amount,
-      paymentMethod,
-      notes: notes.trim(),
-    })
-    onSuccess?.()
-    if (!editingExpense) {
-      setDate(todayStr())
-      setCategory('')
-      setDescription('')
-      setAmount('')
-      setNotes('')
+    setSubmitError(null)
+    setIsSubmitting(true)
+    try {
+      await onSubmit({
+        date,
+        category,
+        description: description.trim(),
+        amount,
+        paymentMethod,
+        notes: notes.trim(),
+      })
+      onSuccess?.()
+      if (!editingExpense) {
+        setDate(todayStr())
+        setCategory('')
+        setDescription('')
+        setAmount('')
+        setNotes('')
+      }
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      {submitError && (
+        <p className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+          {submitError}
+        </p>
+      )}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="modal-date">Date</Label>
@@ -137,8 +153,8 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancel, onSucc
         </div>
       </div>
       <div className="flex flex-col-reverse gap-3 border-t border-border pt-4 sm:flex-row sm:flex-wrap">
-        <Button type="submit" className="min-h-[44px] w-full sm:w-auto">
-          {editingExpense ? 'Save changes' : 'Add expense'}
+        <Button type="submit" className="min-h-[44px] w-full sm:w-auto" disabled={isSubmitting}>
+          {isSubmitting ? 'Saving…' : editingExpense ? 'Save changes' : 'Add expense'}
         </Button>
         {editingExpense ? (
           <Button type="button" variant="outline" onClick={onCancel} className="min-h-[44px] w-full sm:w-auto">

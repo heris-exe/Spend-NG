@@ -1,4 +1,4 @@
-# Expense Tracker 2026 (React)
+# Spend NG (React)
 
 A **React** web app to track daily expenses in **₦ (Naira)**. Built with Vite, Tailwind CSS, and shadcn/ui. No Excel — add expenses, see dashboard totals and charts, and filter the log by date. **Data syncs across devices** via Supabase (sign in on each device to see the same expenses).
 

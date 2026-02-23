@@ -124,8 +124,11 @@ export default function ExpenseCharts({ expenses }) {
     )
   }
 
+  const categorySummary = categoryData.map((d) => `${d.name} ${formatAmount(d.value)}`).join(', ')
+  const monthlySummary = monthlyData.map((d) => `${d.name}: ${formatAmount(d.value)}`).join(', ')
+
   return (
-    <section className="space-y-5">
+    <section className="space-y-5" aria-label="Spending charts">
       <div>
         <h2 className="text-sm font-medium text-foreground tracking-tight">Charts</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">Spending by category and over time</p>
@@ -136,7 +139,7 @@ export default function ExpenseCharts({ expenses }) {
             <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Spending by category</h3>
           </CardHeader>
           <CardContent className="px-0 pb-0 pt-0">
-            <div className="h-[260px] w-full sm:h-[340px]">
+            <div className="h-[260px] w-full sm:h-[340px]" role="img" aria-label={categorySummary || 'Spending by category chart'}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                   <Pie
@@ -175,8 +178,8 @@ export default function ExpenseCharts({ expenses }) {
           <CardHeader className="gap-1 pb-3 pt-0">
             <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Spending by month</h3>
           </CardHeader>
-<CardContent className="px-0 pb-0 pt-0">
-          <div className="h-[220px] w-full sm:h-[280px]">
+          <CardContent className="px-0 pb-0 pt-0">
+            <div className="h-[220px] w-full sm:h-[280px]" role="img" aria-label={monthlySummary || 'Spending by month chart'}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
                   <XAxis
@@ -201,7 +204,7 @@ export default function ExpenseCharts({ expenses }) {
             <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Daily expense</h3>
           </CardHeader>
           <CardContent className="px-0 pb-0 pt-0">
-            <div className="h-[200px] w-full sm:h-[260px]">
+            <div className="h-[200px] w-full sm:h-[260px]" role="img" aria-label="Daily expense over time">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />

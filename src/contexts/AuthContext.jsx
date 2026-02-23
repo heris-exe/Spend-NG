@@ -11,6 +11,7 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [sessionMessage, setSessionMessage] = useState(null)
 
   useEffect(() => {
     if (!supabase) {
@@ -44,13 +45,21 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut()
   }
 
+  const resetPasswordForEmail = async (email) => {
+    if (!supabase) return { error: new Error('Supabase not configured') }
+    return supabase.auth.resetPasswordForEmail({ email })
+  }
+
   const value = {
     user,
     loading,
     isConfigured: !!supabase,
+    sessionMessage,
+    setSessionMessage,
     signIn,
     signUp,
     signOut,
+    resetPasswordForEmail,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

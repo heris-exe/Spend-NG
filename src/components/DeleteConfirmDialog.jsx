@@ -14,7 +14,7 @@ import { formatAmount } from '@/utils/helpers'
  * Custom delete confirmation modal. Shows the expense details so the user
  * knows exactly what they're removing. Replaces the native window.confirm.
  */
-export function DeleteConfirmDialog({ expense, open, onOpenChange, onConfirm, isDeleting }) {
+export function DeleteConfirmDialog({ expense, open, onOpenChange, onConfirm, isDeleting, deleteError }) {
   if (!expense) return null
 
   const handleConfirm = async () => {
@@ -56,6 +56,11 @@ export function DeleteConfirmDialog({ expense, open, onOpenChange, onConfirm, is
                 </span>
               </p>
             </div>
+            {deleteError && (
+              <p className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+                {deleteError}
+              </p>
+            )}
           </div>
         </div>
         <DialogFooter className="gap-2 sm:gap-0 mt-4">

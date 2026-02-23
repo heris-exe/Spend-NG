@@ -11,18 +11,28 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Card, CardContent } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { CATEGORIES } from '@/constants'
 
 export default function ExpenseLog({ expenses, onEdit, onDelete }) {
   const [filterDate, setFilterDate] = useState('')
+  const [filterCategory, setFilterCategory] = useState('')
 
   const filteredList = useMemo(() => {
     let list = expenses
-    if (filterDate) list = expenses.filter((e) => e.date === filterDate)
+    if (filterDate) list = list.filter((e) => e.date === filterDate)
+    if (filterCategory) list = list.filter((e) => (e.category || 'Other') === filterCategory)
     return [...list].sort((a, b) => {
       if (a.date !== b.date) return b.date.localeCompare(a.date)
-      return (b.id ?? 0) - (a.id ?? 0)
+      return String(b.id ?? '').localeCompare(String(a.id ?? ''))
     })
-  }, [expenses, filterDate])
+  }, [expenses, filterDate, filterCategory])
 
   const dailyTotalsByDate = useMemo(() => {
     const map = {}
@@ -39,7 +49,7 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-sm font-medium text-foreground tracking-tight">Daily expense log</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">View and filter by date</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">View and filter by date or category</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <label htmlFor="filterDate" className="text-xs text-muted-foreground">
@@ -52,7 +62,29 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
           />
-          <Button type="button" variant="secondary" size="sm" className="min-h-[44px] sm:min-h-0" onClick={() => setFilterDate('')}>
+          <label htmlFor="filterCategory" className="text-xs text-muted-foreground">
+            Category
+          </label>
+          <Select value={filterCategory || 'all'} onValueChange={(v) => setFilterCategory(v === 'all' ? '' : v)}>
+            <SelectTrigger id="filterCategory" className="h-10 w-full min-w-0 sm:h-9 sm:w-auto sm:min-w-[140px]">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="min-h-[44px] sm:min-h-0"
+            onClick={() => { setFilterDate(''); setFilterCategory('') }}
+          >
             Show all
           </Button>
         </div>
@@ -123,7 +155,7 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
       </Card>
       {filteredList.length === 0 && (
         <div className="rounded-xl border border-dashed border-border bg-muted/20 py-12 text-center text-sm text-muted-foreground">
-          No expenses yet. Add one above.
+          {filterDate || filterCategory ? 'No expenses match the selected filters.' : 'No expenses yet. Add one above.'}
         </div>
       )}
     </section>

@@ -1,5 +1,5 @@
 {
-  "name": "expense-tracker-2026",
+  "name": "spend-ng",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -25,6 +25,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "vite": "^5.0.0"
+    "vite": "^5.0.0",
+    "vite-plugin-pwa": "^1.2.0"
   }
 }

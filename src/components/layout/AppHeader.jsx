@@ -8,13 +8,22 @@ export default function AppHeader() {
 
   return (
     <header className="flex items-start justify-between gap-3 rounded-xl border border-border bg-card px-4 py-4 shadow-sm sm:px-5 sm:py-5">
-      <div className="min-w-0 flex-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-          Expense Tracker 2026
-        </h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Track daily expenses in ₦ — no Excel needed
-        </p>
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <img
+          src="/logo.png"
+          alt=""
+          className="size-9 shrink-0 invert dark:invert-0 sm:size-10"
+          width={40}
+          height={40}
+        />
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+            Spend NG
+          </h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Track daily expenses in ₦ — no Excel needed
+          </p>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         {isConfigured && user && (
