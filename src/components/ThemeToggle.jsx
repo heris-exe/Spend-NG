@@ -18,7 +18,7 @@ export function ThemeToggle() {
           type="button"
           variant="ghost"
           size="icon"
-          className="relative h-9 w-9 cursor-pointer shrink-0"
+          className="relative h-9 w-9 min-h-[44px] min-w-[44px] cursor-pointer shrink-0 sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
           aria-label="Toggle theme (light / dark / system)"
         >
           <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

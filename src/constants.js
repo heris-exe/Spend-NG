@@ -1,5 +1,3 @@
-export const STORAGE_KEY = "expense-tracker-2026";
-
 export const CATEGORIES = [
   "Food",
   "Food & Drinks",

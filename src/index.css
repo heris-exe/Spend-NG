@@ -95,7 +95,12 @@ body,
 
 /* Slightly larger base size so Livvic doesn’t look tiny (same px can look smaller than system fonts) */
 html {
-  font-size: 18px;
+  font-size: 16px;
+}
+@media (min-width: 390px) {
+  html {
+    font-size: 18px;
+  }
 }
 
 body {
@@ -106,13 +111,17 @@ body {
   line-height: 1.5;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  /* Safe area for notched devices (e.g. iPhone 12) so content isn't under the notch or home indicator */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 #root {
   min-height: 100vh;
 }
 
-/* Pie chart legend: prevent long category names from overflowing */
+/* Pie chart legend: prevent long category names from overflowing; tighter on small screens */
 .recharts-legend-item-text {
   max-width: 120px;
   overflow: hidden;
@@ -120,6 +129,11 @@ body {
   white-space: nowrap;
   display: inline-block;
   vertical-align: middle;
+}
+@media (max-width: 639px) {
+  .recharts-legend-item-text {
+    max-width: 80px;
+  }
 }
 
 /* Expense log table: force typography and colors to match app design */

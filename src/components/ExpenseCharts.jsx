@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import {
   ResponsiveContainer,
   PieChart,
@@ -89,7 +89,20 @@ function CustomTooltip({ active, payload, label }) {
   )
 }
 
+/** Match Tailwind sm breakpoint so charts and legend adapt on small screens (e.g. iPhone 12, Tecno Spark 30C). */
+function useIsNarrow() {
+  const [isNarrow, setIsNarrow] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 639px)')
+    const handler = () => setIsNarrow(mql.matches)
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [])
+  return isNarrow
+}
+
 export default function ExpenseCharts({ expenses }) {
+  const isNarrow = useIsNarrow()
   const categoryData = useCategoryData(expenses)
   const monthlyData = useMonthlyData(expenses)
   const dailyData = useDailyData(expenses)
@@ -123,16 +136,16 @@ export default function ExpenseCharts({ expenses }) {
             <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Spending by category</h3>
           </CardHeader>
           <CardContent className="px-0 pb-0 pt-0">
-            <div className="h-[340px] w-full">
+            <div className="h-[260px] w-full sm:h-[340px]">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 12, right: 12, bottom: 12, left: 12 }}>
+                <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
                   <Pie
                     data={categoryData}
                     dataKey="value"
                     nameKey="name"
                     cx="50%"
                     cy="50%"
-                    outerRadius={110}
+                    outerRadius={isNarrow ? 72 : 110}
                     label={false}
                   >
                     {categoryData.map((_, i) => (
@@ -141,17 +154,17 @@ export default function ExpenseCharts({ expenses }) {
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
                   <Legend
-                    layout="vertical"
-                    align="right"
-                    verticalAlign="middle"
+                    layout={isNarrow ? 'horizontal' : 'vertical'}
+                    align={isNarrow ? 'center' : 'right'}
+                    verticalAlign={isNarrow ? 'bottom' : 'middle'}
+                    wrapperStyle={isNarrow ? { fontSize: 10, paddingTop: 8 } : { fontSize: 11, paddingLeft: 24, marginLeft: 8 }}
                     formatter={(value) => {
                       const total = categoryData.reduce((s, d) => s + d.value, 0)
                       const item = categoryData.find((d) => d.name === value)
                       const pct = item && total ? ((item.value / total) * 100).toFixed(0) : '0'
-                      const short = value.length > 12 ? value.slice(0, 11) + '…' : value
+                      const short = value.length > (isNarrow ? 10 : 12) ? value.slice(0, (isNarrow ? 9 : 11)) + '…' : value
                       return `${short} ${pct}%`
                     }}
-                    wrapperStyle={{ fontSize: 11, paddingLeft: 24, marginLeft: 8 }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -162,10 +175,10 @@ export default function ExpenseCharts({ expenses }) {
           <CardHeader className="gap-1 pb-3 pt-0">
             <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Spending by month</h3>
           </CardHeader>
-          <CardContent className="px-0 pb-0 pt-0">
-            <div className="h-[280px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+<CardContent className="px-0 pb-0 pt-0">
+          <div className="h-[220px] w-full sm:h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={monthlyData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
                   <XAxis
                     dataKey="name"
                     tick={{ fill: AXIS_TICK, fontSize: 12 }}
@@ -188,7 +201,7 @@ export default function ExpenseCharts({ expenses }) {
             <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Daily expense</h3>
           </CardHeader>
           <CardContent className="px-0 pb-0 pt-0">
-            <div className="h-[260px] w-full">
+            <div className="h-[200px] w-full sm:h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />

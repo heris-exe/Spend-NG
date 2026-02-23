@@ -1,43 +1,64 @@
 /**
- * Encapsulates expense list state, localStorage sync, and CRUD actions.
- * Keeps App.jsx focused on layout and composition.
+ * Encapsulates expense list state, cloud API sync, and CRUD actions.
+ * Data is loaded from and saved to Supabase so it syncs across devices for the signed-in user.
  */
 
-import { useState, useEffect, useRef } from 'react'
-import { getExpenses, saveExpenses } from '../services/expenseStorage'
-import seedExpenses from '../data/seedExpenses.json'
+import { useState, useEffect, useCallback } from 'react'
+import {
+  fetchExpenses,
+  createExpense,
+  updateExpense,
+  deleteExpense,
+} from '../services/expenseApi'
 
 export function useExpenses() {
   const [expenses, setExpenses] = useState([])
   const [editingExpense, setEditingExpense] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
-  const hasHydrated = useRef(false)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
 
-  useEffect(() => {
-    const stored = getExpenses()
-    setExpenses(stored.length > 0 ? stored : seedExpenses)
-    hasHydrated.current = true
+  const loadExpenses = useCallback(async () => {
+    setIsLoading(true)
+    setLoadError(null)
+    const { data, error } = await fetchExpenses()
+    setIsLoading(false)
+    if (error) {
+      setLoadError(error)
+      setExpenses([])
+      return
+    }
+    setExpenses(data || [])
   }, [])
 
   useEffect(() => {
-    if (!hasHydrated.current) return
-    saveExpenses(expenses)
-  }, [expenses])
+    loadExpenses()
+  }, [loadExpenses])
 
   const closeModal = () => {
     setFormOpen(false)
     setEditingExpense(null)
   }
 
-  const handleAdd = (payload) => {
+  const handleAdd = async (payload) => {
     if (editingExpense) {
+      const { data, error } = await updateExpense(editingExpense.id, payload)
+      if (error) {
+        console.error('Update failed', error)
+        return
+      }
       setExpenses((prev) =>
-        prev.map((e) =>
-          e.id === editingExpense.id ? { ...e, ...payload } : e
-        )
+        prev.map((e) => (e.id === editingExpense.id ? { ...e, ...data } : e))
       )
     } else {
-      setExpenses((prev) => [...prev, { id: Date.now(), ...payload }])
+      const { data, error } = await createExpense(payload)
+      if (error) {
+        console.error('Create failed', error)
+        return
+      }
+      setExpenses((prev) => [data, ...prev])
     }
     closeModal()
   }
@@ -46,21 +67,38 @@ export function useExpenses() {
     setEditingExpense(expense)
   }
 
-  const handleDelete = (id) => {
-    if (typeof window !== 'undefined' && window.confirm('Delete this expense?')) {
-      setExpenses((prev) => prev.filter((e) => e.id !== id))
+  const openDeleteConfirm = (expense) => setDeleteTarget(expense)
+  const closeDeleteConfirm = () => setDeleteTarget(null)
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return
+    setIsDeleting(true)
+    const { error } = await deleteExpense(deleteTarget.id)
+    setIsDeleting(false)
+    if (error) {
+      console.error('Delete failed', error)
+      return
     }
+    setExpenses((prev) => prev.filter((e) => e.id !== deleteTarget.id))
+    setDeleteTarget(null)
   }
 
   return {
     expenses,
     editingExpense,
     formOpen,
+    deleteTarget,
+    isDeleting,
     isModalOpen: formOpen || editingExpense !== null,
+    isLoading,
+    loadError,
+    loadExpenses,
     openForm: () => setFormOpen(true),
     closeModal,
     handleAdd,
     handleEdit,
-    handleDelete,
+    openDeleteConfirm,
+    closeDeleteConfirm,
+    confirmDelete,
   }
 }

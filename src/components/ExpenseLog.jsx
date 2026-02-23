@@ -48,18 +48,18 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
           <Input
             type="date"
             id="filterDate"
-            className="h-9 w-auto min-w-[140px]"
+            className="h-10 w-full min-w-0 sm:h-9 sm:w-auto sm:min-w-[140px]"
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
           />
-          <Button type="button" variant="secondary" size="sm" onClick={() => setFilterDate('')}>
+          <Button type="button" variant="secondary" size="sm" className="min-h-[44px] sm:min-h-0" onClick={() => setFilterDate('')}>
             Show all
           </Button>
         </div>
       </div>
       <Card className="overflow-hidden border-border bg-card shadow-sm transition-shadow hover:shadow-md rounded-xl">
-        <CardContent className="p-0">
-          <Table className="expense-log-table">
+        <CardContent className="p-0 overflow-x-auto">
+          <Table className="expense-log-table min-w-[720px] sm:min-w-0">
             <TableHeader>
               <TableRow className="border-b border-border bg-muted/40 hover:bg-muted/40">
                 <TableHead className="h-11 text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</TableHead>
@@ -91,13 +91,13 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
                   </TableCell>
                   <TableCell className="py-3 text-sm">{exp.paymentMethod || '-'}</TableCell>
                   <TableCell className="text-muted-cell max-w-[160px] truncate py-3 text-sm sm:max-w-none">{exp.notes || '-'}</TableCell>
-                  <TableCell className="py-3 text-sm">
+                  <TableCell className="py-2 sm:py-3 text-sm">
                     <div className="flex gap-1">
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        className="min-h-[36px] min-w-[44px] text-destructive hover:text-destructive hover:bg-destructive/10"
                         onClick={() => onEdit(exp)}
                         aria-label="Edit"
                       >
@@ -107,8 +107,8 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => onDelete(exp.id)}
+                        className="min-h-[36px] min-w-[44px] text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => onDelete(exp)}
                         aria-label="Delete"
                       >
                         Delete

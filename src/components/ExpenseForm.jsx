@@ -136,16 +136,16 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancel, onSucc
           />
         </div>
       </div>
-      <div className="flex flex-wrap gap-3 border-t border-border pt-4">
-        <Button type="submit">
+      <div className="flex flex-col-reverse gap-3 border-t border-border pt-4 sm:flex-row sm:flex-wrap">
+        <Button type="submit" className="min-h-[44px] w-full sm:w-auto">
           {editingExpense ? 'Save changes' : 'Add expense'}
         </Button>
         {editingExpense ? (
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} className="min-h-[44px] w-full sm:w-auto">
             Cancel
           </Button>
         ) : (
-          <Button type="button" variant="ghost" onClick={onCancel}>
+          <Button type="button" variant="ghost" onClick={onCancel} className="min-h-[44px] w-full sm:w-auto">
             Cancel
           </Button>
         )}
