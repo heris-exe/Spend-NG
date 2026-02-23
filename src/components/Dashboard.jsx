@@ -37,10 +37,10 @@ export default function Dashboard({ expenses }) {
     const year = now.getFullYear()
     const month = now.getMonth()
 
-    // This week: Monday–Sunday (ISO-style). Get start/end as YYYY-MM-DD for string comparison.
-    const daysFromMonday = (now.getDay() + 6) % 7 // Sun=6, Mon=0, Tue=1, …
+    // This week: Sunday–Saturday. Get start/end as YYYY-MM-DD for string comparison.
+    const daysFromSunday = now.getDay() // Sun=0, Mon=1, …, Sat=6
     const weekStart = new Date(now)
-    weekStart.setDate(now.getDate() - daysFromMonday)
+    weekStart.setDate(now.getDate() - daysFromSunday)
     const weekEnd = new Date(weekStart)
     weekEnd.setDate(weekStart.getDate() + 6)
     const toYMD = (d) =>
