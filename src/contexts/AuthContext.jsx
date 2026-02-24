@@ -52,17 +52,28 @@ export function AuthProvider({ children }) {
 
   /**
    * Sign in with Google (OAuth). Redirects the user to Google, then back to this app.
-   * Enable Google in Supabase: Authentication → Providers → Google, and add your
-   * Google OAuth client ID and secret. In production, set VITE_APP_URL to your
-   * live site URL so the redirect goes there instead of localhost. Add that URL
-   * to Supabase Authentication → URL Configuration → Redirect URLs.
+   * - Dev: set VITE_APP_URL=http://localhost:5173 (or leave unset to use current origin).
+   * - Prod: set VITE_APP_URL=https://your-domain.com (e.g. https://spendng.vercel.app).
+   * Supabase Dashboard → Authentication → URL Configuration: set Site URL to the same
+   * production URL (not localhost:3000); add it to Redirect URLs so OAuth returns there.
    */
   const signInWithGoogle = async () => {
     if (!supabase) return { error: new Error('Supabase not configured') }
-    const redirectUrl =
+    let redirectUrl =
       typeof window !== 'undefined'
         ? (import.meta.env.VITE_APP_URL || window.location.origin)
         : undefined
+    // If we're on a real host but VITE_APP_URL is localhost (e.g. wrong env), prefer current origin
+    if (
+      typeof window !== 'undefined' &&
+      redirectUrl &&
+      (redirectUrl.startsWith('http://localhost:') || redirectUrl.startsWith('http://127.0.0.1'))
+    ) {
+      const origin = window.location.origin
+      if (!origin.startsWith('http://localhost') && !origin.startsWith('http://127.0.0.1')) {
+        redirectUrl = origin
+      }
+    }
     return supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

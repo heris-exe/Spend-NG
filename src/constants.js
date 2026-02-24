@@ -1,14 +1,14 @@
 export const CATEGORIES = [
   "Food",
-  "Food & Drinks",
+  "Drink",
   "Snacks",
   "Transport",
-  "Personal & Shopping",
-  "Shopping",
-  "Bills & Utilities",
+  "Personal Care (e.g. shopping)",
+  "Household",
+  "Utilities (e.g. airtime, data)",
+  "Subscriptions",
   "Health",
   "Entertainment",
-  "Personal",
   "Other",
 ];
 
