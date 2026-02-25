@@ -117,6 +117,15 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Better touch targets and remove tap delay on mobile */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+}
+
 #root {
   min-height: 100vh;
 }

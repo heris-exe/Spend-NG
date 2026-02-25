@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { ArrowLeft } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { ArrowLeft, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getDayOfWeek, formatAmount, formatTimeFromISO } from '../utils/helpers'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/select'
 import { CATEGORIES } from '@/constants'
 
+const PAGE_SIZE = 20
+
 export default function ExpenseLog({ expenses, onEdit, onDelete }) {
   const [filterDate, setFilterDate] = useState('')
   const [filterCategory, setFilterCategory] = useState('')
@@ -30,6 +32,14 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [minAmount, setMinAmount] = useState('')
   const [maxAmount, setMaxAmount] = useState('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [page, setPage] = useState(1)
+  const hasActiveFilters = !!(filterDate || filterCategory || searchTerm.trim() || minAmount || maxAmount)
+
+  /** Reset to first page when filters change */
+  useEffect(() => {
+    setPage(1)
+  }, [filterDate, filterCategory, searchTerm, minAmount, maxAmount])
 
   const filteredList = useMemo(() => {
     let list = expenses
@@ -80,87 +90,136 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
     return map
   }, [filteredList])
 
-  return (
-    <section className="space-y-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-sm font-medium text-foreground tracking-tight">Daily expense log</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            View and filter by date, category, amount, or keyword
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <label htmlFor="filterDate" className="text-xs text-muted-foreground">
-            Date
-          </label>
+  const totalItems = filteredList.length
+  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const paginatedList = useMemo(() => {
+    const start = (safePage - 1) * PAGE_SIZE
+    return filteredList.slice(start, start + PAGE_SIZE)
+  }, [filteredList, safePage])
+  const rangeStart = totalItems === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1
+  const rangeEnd = Math.min(safePage * PAGE_SIZE, totalItems)
+  const showPagination = totalItems > PAGE_SIZE
+
+  /** Clamp page when total pages shrinks (e.g. after filtering) */
+  useEffect(() => {
+    if (totalPages >= 1 && page > totalPages) setPage(totalPages)
+  }, [page, totalPages])
+
+  const filterControls = (
+    <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-end md:gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:flex md:gap-6">
+        <div className="space-y-2 min-w-0">
+          <label htmlFor="filterDate" className="block text-xs font-medium text-muted-foreground">Date</label>
           <Input
             type="date"
             id="filterDate"
-            className="h-10 w-full min-w-0 sm:h-9 sm:w-auto sm:min-w-[140px]"
+            className="h-10 w-full min-w-0 sm:h-9 md:h-9 md:min-w-[140px]"
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
           />
-          <label htmlFor="filterCategory" className="text-xs text-muted-foreground">
-            Category
-          </label>
+        </div>
+        <div className="space-y-2 min-w-0">
+          <label htmlFor="filterCategory" className="block text-xs font-medium text-muted-foreground">Category</label>
           <Select value={filterCategory || 'all'} onValueChange={(v) => setFilterCategory(v === 'all' ? '' : v)}>
-            <SelectTrigger id="filterCategory" className="h-10 w-full min-w-0 sm:h-9 sm:w-auto sm:min-w-[140px]">
+            <SelectTrigger id="filterCategory" className="h-10 w-full min-w-0 sm:h-9 md:h-9 md:min-w-[140px]">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
               {CATEGORIES.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
+                <SelectItem key={c} value={c}>{c}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <label htmlFor="filterSearch" className="text-xs text-muted-foreground">
-            Search
-          </label>
-          <Input
-            id="filterSearch"
-            placeholder="Description, notes, category…"
-            className="h-10 w-full min-w-0 sm:h-9 sm:w-[180px]"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <label htmlFor="filterMin" className="text-xs text-muted-foreground">
-            Min ₦
-          </label>
+        </div>
+      </div>
+      <div className="space-y-2 min-w-0 md:min-w-[180px]">
+        <label htmlFor="filterSearch" className="block text-xs font-medium text-muted-foreground">Search</label>
+        <Input
+          id="filterSearch"
+          placeholder="Description, notes, category…"
+          className="h-10 w-full min-w-0 sm:h-9 md:h-9 md:w-[180px]"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4 md:flex md:gap-6">
+        <div className="space-y-2 min-w-0">
+          <label htmlFor="filterMin" className="block text-xs font-medium text-muted-foreground">Min ₦</label>
           <Input
             type="number"
             id="filterMin"
-            className="h-10 w-24 min-w-0 sm:h-9"
+            className="h-10 w-full min-w-0 sm:h-9 md:h-9 md:min-w-[100px]"
             value={minAmount}
             onChange={(e) => setMinAmount(e.target.value)}
           />
-          <label htmlFor="filterMax" className="text-xs text-muted-foreground">
-            Max ₦
-          </label>
+        </div>
+        <div className="space-y-2 min-w-0">
+          <label htmlFor="filterMax" className="block text-xs font-medium text-muted-foreground">Max ₦</label>
           <Input
             type="number"
             id="filterMax"
-            className="h-10 w-24 min-w-0 sm:h-9"
+            className="h-10 w-full min-w-0 sm:h-9 md:h-9 md:min-w-[100px]"
             value={maxAmount}
             onChange={(e) => setMaxAmount(e.target.value)}
           />
+        </div>
+      </div>
+      <div className="flex flex-col justify-end">
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="min-h-[40px] w-full touch-manipulation md:min-h-9 md:w-auto"
+          onClick={() => {
+            setFilterDate('')
+            setFilterCategory('')
+            setSearchTerm('')
+            setMinAmount('')
+            setMaxAmount('')
+          }}
+        >
+          Show all
+        </Button>
+      </div>
+    </div>
+  )
+
+  return (
+    <section className="space-y-6">
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-sm font-medium text-foreground tracking-tight">Daily expense log</h2>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            View and filter by date, category, amount, or keyword
+          </p>
+        </div>
+        {/* Mobile: collapsible filters to save space */}
+        <div className="md:hidden">
           <Button
             type="button"
-            variant="secondary"
+            variant="outline"
             size="sm"
-            className="min-h-[44px] sm:min-h-0"
-            onClick={() => {
-              setFilterDate('')
-              setFilterCategory('')
-              setSearchTerm('')
-              setMinAmount('')
-              setMaxAmount('')
-            }}
+            className="min-h-[44px] w-full touch-manipulation justify-between gap-2"
+            onClick={() => setFiltersOpen((o) => !o)}
+            aria-expanded={filtersOpen}
           >
-            Show all
+            <span className="flex items-center gap-2">
+              <Filter className="h-4 w-4" />
+              Filters
+              {hasActiveFilters && (
+                <span className="rounded-full bg-primary/20 px-1.5 py-0.5 text-xs font-medium text-primary-foreground">
+                  On
+                </span>
+              )}
+            </span>
+            {filtersOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
+          {filtersOpen && <div className="mt-3 space-y-3">{filterControls}</div>}
+        </div>
+        <div className="hidden md:block md:flex-1 md:min-w-0">
+          {filterControls}
         </div>
       </div>
 
@@ -173,8 +232,8 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
             </div>
           ) : (
           <ul className="space-y-2" role="list">
-            {filteredList.map((exp, index) => {
-              const isFirstForDate = index === 0 || filteredList[index - 1].date !== exp.date
+            {paginatedList.map((exp, index) => {
+              const isFirstForDate = index === 0 || paginatedList[index - 1].date !== exp.date
               const dailyTotal = isFirstForDate ? (dailyTotalsByDate[exp.date] ?? 0) : null
               return (
                 <li key={exp.id}>
@@ -296,9 +355,9 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredList.map((exp, index) => {
+              {paginatedList.map((exp, index) => {
                 const isFirstRowForDate =
-                  index === 0 || filteredList[index - 1].date !== exp.date
+                  index === 0 || paginatedList[index - 1].date !== exp.date
                 return (
                 <TableRow key={exp.id}>
                   <TableCell className="py-3 text-sm text-foreground">{exp.date}</TableCell>
@@ -351,6 +410,41 @@ export default function ExpenseLog({ expenses, onEdit, onDelete }) {
           </Table>
         </CardContent>
       </Card>
+
+      {showPagination && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+          <p className="text-sm text-muted-foreground">
+            Showing {rangeStart}–{rangeEnd} of {totalItems}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-h-[44px] touch-manipulation gap-1 sm:min-h-9"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={safePage <= 1}
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-h-[44px] touch-manipulation gap-1 sm:min-h-9"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage >= totalPages}
+              aria-label="Next page"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       {filteredList.length === 0 && (
         <div className="hidden rounded-xl border border-dashed border-border bg-muted/20 py-12 text-center text-sm text-muted-foreground md:block">
           {(filterDate || filterCategory || searchTerm.trim() || minAmount || maxAmount) ? 'No expenses match your filters.' : 'No expenses yet. Add one above.'}

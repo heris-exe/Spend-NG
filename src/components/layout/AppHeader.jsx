@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { Button } from '@/components/ui/button'
@@ -7,8 +8,12 @@ export default function AppHeader() {
   const { user, signOut, isConfigured } = useAuth()
 
   return (
-    <header className="flex items-start justify-between gap-3 rounded-xl border border-border bg-card px-4 py-4 shadow-sm sm:px-5 sm:py-5">
-      <div className="flex min-w-0 flex-1 items-start gap-3">
+    <header className="flex items-start justify-between gap-3 rounded-b-xl border-b border-x-0 border-t-0 border-border bg-card/95 px-4 py-4 shadow-sm sm:px-5 sm:py-5">
+      <Link
+        to="/"
+        className="flex min-w-0 flex-1 items-start gap-3 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        aria-label="Spend NG home"
+      >
         <img
           src="/logo.png"
           alt=""
@@ -24,8 +29,8 @@ export default function AppHeader() {
             Track daily expenses in ₦ — no Excel needed
           </p>
         </div>
-      </div>
-      <div className="flex items-center gap-2">
+      </Link>
+      <div className="flex items-center gap-1 sm:gap-2">
         {isConfigured && user && (
           <Button
             type="button"
@@ -33,7 +38,7 @@ export default function AppHeader() {
             size="icon"
             onClick={() => signOut()}
             title="Sign out"
-            className="shrink-0"
+            className="h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 touch-manipulation sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
           >
             <LogOut className="h-4 w-4" />
           </Button>

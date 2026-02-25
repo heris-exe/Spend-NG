@@ -87,13 +87,13 @@ export default function Dashboard({ expenses }) {
         <h2 className="text-sm font-medium text-foreground tracking-tight">Overview</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">Totals at a glance</p>
       </div>
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {statConfig.map(({ key, label, icon: Icon, description }) => {
           const { total, count } = stats[key]
           return (
             <Card
               key={key}
-              className="flex flex-col gap-4 border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md min-h-[140px]"
+              className="flex flex-col gap-3 border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md min-h-[120px] sm:min-h-[140px] sm:gap-4 sm:p-5"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -124,7 +124,7 @@ export function DashboardSkeleton() {
         <Skeleton className="h-3 w-28" />
         <Skeleton className="mt-2 h-3 w-40" />
       </div>
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, idx) => (
           <Card
             key={idx}

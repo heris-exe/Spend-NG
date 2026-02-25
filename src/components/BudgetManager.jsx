@@ -188,11 +188,11 @@ function BudgetForm({ budget, onSubmit, onCancel, isSubmitting }) {
           required
         />
       </div>
-      <div className="flex flex-wrap gap-2 border-t border-border pt-4">
-        <Button type="submit" disabled={isSubmitting}>
+      <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:flex-wrap">
+        <Button type="submit" disabled={isSubmitting} className="min-h-[44px] w-full sm:w-auto sm:min-h-0">
           {isSubmitting ? 'Saving…' : budget ? 'Save changes' : 'Add budget'}
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel} className="min-h-[44px] w-full sm:w-auto sm:min-h-0">
           Cancel
         </Button>
       </div>
@@ -249,7 +249,7 @@ export default function BudgetManager({
             Set daily, weekly, or monthly limits (overall or per category)
           </p>
         </div>
-        <Button onClick={() => { setEditingBudget(null); setFormOpen(true) }} className="shrink-0 gap-2">
+        <Button onClick={() => { setEditingBudget(null); setFormOpen(true) }} className="shrink-0 gap-2 min-h-[44px] w-full touch-manipulation sm:min-h-0 sm:w-auto">
           <Plus className="h-4 w-4" />
           Add budget
         </Button>
@@ -262,7 +262,7 @@ export default function BudgetManager({
       ) : budgetProgress.length === 0 ? (
         <Card className="border border-dashed border-border bg-muted/20 p-8 rounded-xl text-center">
           <p className="text-sm text-muted-foreground mb-4">No budgets yet.</p>
-          <Button variant="outline" size="sm" onClick={() => setFormOpen(true)}>
+          <Button variant="outline" size="sm" onClick={() => setFormOpen(true)} className="min-h-[44px] w-full max-w-[280px] sm:min-h-0 sm:w-auto">
             Add your first budget
           </Button>
         </Card>
@@ -270,9 +270,9 @@ export default function BudgetManager({
         <Card className="border-border overflow-hidden rounded-xl">
           <ul className="divide-y divide-border" role="list">
             {budgetProgress.map(({ budget, spent, progress, state }) => (
-              <li key={budget.id} className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-5 sm:py-4">
+              <li key={budget.id} className="flex flex-wrap items-start gap-3 px-4 py-3 sm:items-center sm:px-5 sm:py-4">
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
                     <span className="font-medium text-foreground">
                       {budget.scope === 'overall' ? 'Overall' : (budget.category || 'Category')}
                     </span>
@@ -281,8 +281,8 @@ export default function BudgetManager({
                     <span className="text-muted-foreground">·</span>
                     <span className="text-muted-foreground">{formatPeriodLabel(budget)}</span>
                   </div>
-                  <div className="mt-1 flex items-center gap-2">
-                    <div className="h-2 flex-1 max-w-[200px] rounded-full bg-muted overflow-hidden">
+                  <div className="mt-2 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-2">
+                    <div className="h-2 w-full min-w-0 max-w-[200px] rounded-full bg-muted overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
                           state === 'over' ? 'bg-destructive' : state === 'near' ? 'bg-amber-500' : 'bg-primary'
@@ -290,19 +290,19 @@ export default function BudgetManager({
                         style={{ width: `${Math.min(100, progress * 100)}%` }}
                       />
                     </div>
-                    <span className="text-xs tabular-nums text-muted-foreground">
+                    <span className="text-xs tabular-nums text-muted-foreground shrink-0">
                       {formatAmount(spent)} / {formatAmount(budget.amount)}
                       {state === 'over' && ' (over)'}
                       {state === 'near' && ' (near limit)'}
                     </span>
                   </div>
                 </div>
-                <div className="flex gap-1 shrink-0">
+                <div className="flex gap-1 shrink-0 min-h-[44px] items-center sm:min-h-0">
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0"
+                    className="h-9 w-9 min-h-[44px] min-w-[44px] p-0 sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0"
                     onClick={() => { setEditingBudget(budget); setFormOpen(true) }}
                     aria-label="Edit budget"
                   >
@@ -312,7 +312,7 @@ export default function BudgetManager({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    className="h-9 w-9 min-h-[44px] min-w-[44px] p-0 text-destructive hover:text-destructive hover:bg-destructive/10 sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0"
                     onClick={() => setDeleteTarget(budget)}
                     aria-label="Delete budget"
                   >
@@ -350,12 +350,13 @@ export default function BudgetManager({
               This will remove the budget. You can add it again later.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} className="min-h-[44px] w-full sm:w-auto sm:min-h-0">Cancel</Button>
             <Button
               variant="destructive"
               disabled={isSubmitting}
               onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
+              className="min-h-[44px] w-full sm:w-auto sm:min-h-0"
             >
               {isSubmitting ? 'Deleting…' : 'Delete'}
             </Button>

@@ -154,6 +154,9 @@ export function DailyExpenseChart({ expenses }) {
             <p className="text-center text-sm text-muted-foreground">
               Add some expenses to see your daily spending trend here.
             </p>
+            <p className="mt-1 text-center text-xs text-muted-foreground">
+              Use the Expenses page to add transactions.
+            </p>
           </CardContent>
         )}
       </Card>
@@ -190,7 +193,8 @@ export default function ExpenseCharts({ expenses }) {
           <p className="mt-0.5 text-xs text-muted-foreground">Spending by category and over time</p>
         </div>
         <div className="rounded-xl border border-dashed border-border bg-muted/20 py-12 text-center text-sm text-muted-foreground">
-          Add some expenses to see charts here.
+          <p>Add some expenses to see charts here.</p>
+          <p className="mt-1 text-xs">Add them from the Expenses page.</p>
         </div>
       </section>
     )

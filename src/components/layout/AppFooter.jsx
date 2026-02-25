@@ -10,7 +10,7 @@ const LINKS = [
 export default function AppFooter() {
   return (
     <footer className="mt-8 rounded-xl border border-border bg-card px-4 py-4 text-center text-xs text-muted-foreground shadow-sm sm:mt-12 sm:px-5 sm:py-5">
-      <p className="mb-3">Export or import as JSON, CSV, or Excel from the toolbar.</p>
+      <p className="mb-3">Export or import expenses as JSON, CSV, or Excel from the Expenses page.</p>
       <p className="flex flex-wrap items-center justify-center gap-x-1 gap-y-1">
         <span>Made by</span>
         <a
