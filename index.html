@@ -21,9 +21,18 @@
     (function() {
       var k = 'expense-tracker-theme';
       var v = localStorage.getItem(k);
-      var dark = v === 'dark' || (v !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      if (dark) document.documentElement.classList.add('dark');
-      else document.documentElement.classList.remove('dark');
+      var root = document.documentElement;
+      if (v === 'daycycle' || !v) {
+        root.classList.remove('dark');
+        var h = new Date().getHours();
+        var slot = (h >= 22 || h < 5) ? 'night' : (h < 7) ? 'dawn' : (h < 10) ? 'morning' : (h < 17) ? 'day' : (h < 20) ? 'evening' : 'dusk';
+        root.setAttribute('data-time', slot);
+      } else {
+        root.removeAttribute('data-time');
+        var dark = v === 'dark' || (v === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) root.classList.add('dark');
+        else root.classList.remove('dark');
+      }
     })();
   </script>
 </head>

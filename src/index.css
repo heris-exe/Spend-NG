@@ -52,6 +52,158 @@
   --theme-ring: #737373;
 }
 
+/* Day cycle theme: time-of-day palettes (sun/moon style, no weather API) */
+[data-time="night"] {
+  --theme-background: #0c0e1a;
+  --theme-foreground: #e2e4ec;
+  --theme-card: #12152a;
+  --theme-card-foreground: #e2e4ec;
+  --theme-popover: #12152a;
+  --theme-popover-foreground: #e2e4ec;
+  --theme-primary: #c8cbdc;
+  --theme-primary-foreground: #0c0e1a;
+  --theme-secondary: #1a1d32;
+  --theme-secondary-foreground: #e2e4ec;
+  --theme-muted: #1a1d32;
+  --theme-muted-foreground: #8b8fa3;
+  --theme-accent: #1e2240;
+  --theme-accent-foreground: #e2e4ec;
+  --theme-destructive: #f87171;
+  --theme-destructive-foreground: #ffffff;
+  --theme-border: #252945;
+  --theme-input: #252945;
+  --theme-ring: #5b5f7a;
+}
+[data-time="dawn"] {
+  --theme-background: #1a1625;
+  --theme-foreground: #2d2438;
+  --theme-card: #e8e4ef;
+  --theme-card-foreground: #1f1a2a;
+  --theme-popover: #f0ecf5;
+  --theme-popover-foreground: #1f1a2a;
+  --theme-primary: #4a3f5c;
+  --theme-primary-foreground: #f5f2f8;
+  --theme-secondary: #d4cee0;
+  --theme-secondary-foreground: #2d2438;
+  --theme-muted: #c9c1d6;
+  --theme-muted-foreground: #5c5268;
+  --theme-accent: #d4cee0;
+  --theme-accent-foreground: #2d2438;
+  --theme-destructive: #dc2626;
+  --theme-destructive-foreground: #ffffff;
+  --theme-border: #b8aec8;
+  --theme-input: #b8aec8;
+  --theme-ring: #6b5f7d;
+}
+[data-time="morning"] {
+  --theme-background: #faf6f0;
+  --theme-foreground: #1c1917;
+  --theme-card: #fffcf7;
+  --theme-card-foreground: #1c1917;
+  --theme-popover: #fffcf7;
+  --theme-popover-foreground: #1c1917;
+  --theme-primary: #292524;
+  --theme-primary-foreground: #faf6f0;
+  --theme-secondary: #f5ebe0;
+  --theme-secondary-foreground: #1c1917;
+  --theme-muted: #f0e6d8;
+  --theme-muted-foreground: #78716c;
+  --theme-accent: #f5ebe0;
+  --theme-accent-foreground: #1c1917;
+  --theme-destructive: #dc2626;
+  --theme-destructive-foreground: #ffffff;
+  --theme-border: #e7dfd2;
+  --theme-input: #e7dfd2;
+  --theme-ring: #a8a29e;
+}
+[data-time="day"] {
+  /* Slightly warmer than pure light so Day cycle is visibly active during daytime */
+  --theme-background: #f9f8f6;
+  --theme-foreground: #1a1917;
+  --theme-card: #fefefc;
+  --theme-card-foreground: #1a1917;
+  --theme-popover: #fefefc;
+  --theme-popover-foreground: #1a1917;
+  --theme-primary: #292826;
+  --theme-primary-foreground: #f9f8f6;
+  --theme-secondary: #f3f0eb;
+  --theme-secondary-foreground: #1a1917;
+  --theme-muted: #f0ede8;
+  --theme-muted-foreground: #6b6560;
+  --theme-accent: #f3f0eb;
+  --theme-accent-foreground: #1a1917;
+  --theme-destructive: #dc2626;
+  --theme-destructive-foreground: #ffffff;
+  --theme-border: #e8e4de;
+  --theme-input: #e8e4de;
+  --theme-ring: #737373;
+}
+[data-time="evening"] {
+  --theme-background: #fdf8f0;
+  --theme-foreground: #1c1917;
+  --theme-card: #fff9f0;
+  --theme-card-foreground: #1c1917;
+  --theme-popover: #fffbf5;
+  --theme-popover-foreground: #1c1917;
+  --theme-primary: #422006;
+  --theme-primary-foreground: #fef3c7;
+  --theme-secondary: #fde7c8;
+  --theme-secondary-foreground: #1c1917;
+  --theme-muted: #fce7c0;
+  --theme-muted-foreground: #78716c;
+  --theme-accent: #fde7c8;
+  --theme-accent-foreground: #1c1917;
+  --theme-destructive: #dc2626;
+  --theme-destructive-foreground: #ffffff;
+  --theme-border: #f5d9a8;
+  --theme-input: #f5d9a8;
+  --theme-ring: #b45309;
+}
+[data-time="dusk"] {
+  --theme-background: #1a1520;
+  --theme-foreground: #ede9e5;
+  --theme-card: #251e2d;
+  --theme-card-foreground: #ede9e5;
+  --theme-popover: #2d2438;
+  --theme-popover-foreground: #ede9e5;
+  --theme-primary: #e7d5b8;
+  --theme-primary-foreground: #1a1520;
+  --theme-secondary: #2d2438;
+  --theme-secondary-foreground: #ede9e5;
+  --theme-muted: #251e2d;
+  --theme-muted-foreground: #a8a29e;
+  --theme-accent: #352a42;
+  --theme-accent-foreground: #ede9e5;
+  --theme-destructive: #f87171;
+  --theme-destructive-foreground: #ffffff;
+  --theme-border: #3d3250;
+  --theme-input: #3d3250;
+  --theme-ring: #8b7a9e;
+}
+
+/* Smoother transitions when day-cycle theme switches slots (e.g. dawn → morning) */
+html[data-time] body {
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+html[data-time] [class*="bg-background"],
+html[data-time] [class*="bg-card"],
+html[data-time] [class*="bg-popover"],
+html[data-time] [class*="bg-muted"],
+html[data-time] [class*="bg-accent"],
+html[data-time] [class*="bg-primary"] {
+  transition: background-color 0.6s ease;
+}
+html[data-time] [class*="text-foreground"],
+html[data-time] [class*="text-muted-foreground"],
+html[data-time] [class*="text-primary"],
+html[data-time] [class*="text-accent-foreground"] {
+  transition: color 0.6s ease;
+}
+html[data-time] [class*="border-border"],
+html[data-time] [class*="border-input"] {
+  transition: border-color 0.6s ease;
+}
+
 /* Tailwind/shadcn: map theme tokens to our switchable --theme-* variables */
 @theme inline {
   --font-sans: "Livvic", system-ui, -apple-system, sans-serif;

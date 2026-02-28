@@ -1,4 +1,4 @@
-import { Moon, Sun, Monitor } from 'lucide-react'
+import { Moon, Sun, Monitor, Sunrise, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,8 +8,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from '@/hooks/useTheme'
 
+function slotLabel(slot) {
+  return slot ? slot.charAt(0).toUpperCase() + slot.slice(1) : ''
+}
+
 export function ThemeToggle() {
-  const [theme, setTheme] = useTheme()
+  const [theme, setTheme, { requestDayCycleLocation, dayCycleSlot }] = useTheme()
 
   return (
     <DropdownMenu>
@@ -19,10 +23,16 @@ export function ThemeToggle() {
           variant="ghost"
           size="icon"
           className="relative h-9 w-9 min-h-[44px] min-w-[44px] cursor-pointer shrink-0 sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
-          aria-label="Toggle theme (light / dark / system)"
+          aria-label="Toggle theme (light / dark / day cycle / system)"
         >
-          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute inset-0 m-auto h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          {theme === 'daycycle' ? (
+            <Sunrise className="h-4 w-4" />
+          ) : (
+            <>
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute inset-0 m-auto h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            </>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -36,6 +46,20 @@ export function ThemeToggle() {
           Dark
           {theme === 'dark' && <span className="ml-auto text-xs">✓</span>}
         </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => setTheme('daycycle')}>
+          <Sunrise className="mr-2 h-4 w-4" />
+          Day cycle{dayCycleSlot ? ` · ${slotLabel(dayCycleSlot)}` : ''}
+          {theme === 'daycycle' && <span className="ml-auto text-xs">✓</span>}
+        </DropdownMenuItem>
+        {theme === 'daycycle' && (
+          <DropdownMenuItem
+            onSelect={() => requestDayCycleLocation()}
+            className="text-muted-foreground"
+          >
+            <MapPin className="mr-2 h-4 w-4" />
+            Use my location for sunrise/sunset
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onSelect={() => setTheme('system')}>
           <Monitor className="mr-2 h-4 w-4" />
           System
