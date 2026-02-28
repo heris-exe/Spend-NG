@@ -25,6 +25,7 @@
       if (v === 'daycycle' || !v) {
         root.classList.remove('dark');
         var h = new Date().getHours();
+        /* Slot logic must match getDayCycleSlot() in src/hooks/useTheme.js */
         var slot = (h >= 22 || h < 5) ? 'night' : (h < 7) ? 'dawn' : (h < 10) ? 'morning' : (h < 17) ? 'day' : (h < 20) ? 'evening' : 'dusk';
         root.setAttribute('data-time', slot);
       } else {

@@ -5,9 +5,6 @@
 
 import SunCalc from 'suncalc'
 
-/** Slot ids we use in the day-cycle theme (must match data-time values in CSS). */
-export const DAY_CYCLE_SLOT_IDS = ['night', 'dawn', 'morning', 'day', 'evening', 'dusk']
-
 /**
  * Get sun times for a given date and location.
  * @param {Date} date

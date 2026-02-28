@@ -144,8 +144,8 @@ export function useTheme() {
       setDayCycleSlot(null)
       applyLightDark(resolve(theme))
     }
-    if (theme !== 'system' && theme !== 'daycycle') window.localStorage.setItem(STORAGE_KEY, theme)
-    else if (theme === 'system') window.localStorage.removeItem(STORAGE_KEY)
+    if (theme === 'system') window.localStorage.removeItem(STORAGE_KEY)
+    else window.localStorage.setItem(STORAGE_KEY, theme)
     if (theme === 'system') {
       const mq = window.matchMedia('(prefers-color-scheme: dark)')
       const listener = () => applyLightDark(mq.matches)
