@@ -142,17 +142,6 @@ export default function ExpensesPage() {
         />
       )}
 
-      <section>
-        <h2 className="mb-4 text-lg font-semibold text-foreground">
-          Spending by category
-        </h2>
-        {isLoading ? (
-          <ExpenseChartsSkeleton />
-        ) : (
-          <ExpenseCharts expenses={expenses} />
-        )}
-      </section>
-
       <input
         ref={fileInputRef}
         type="file"

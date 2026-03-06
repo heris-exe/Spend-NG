@@ -9,6 +9,8 @@ import SmartInsights, { SmartInsightsSkeleton } from '@/components/SmartInsights
 import {
   DailyExpenseChart,
   DailyExpenseChartSkeleton,
+  default as ExpenseCharts,
+  ExpenseChartsSkeleton,
 } from '@/components/ExpenseCharts'
 import { useExpenseContext } from '@/contexts/ExpenseContext'
 import { Button } from '@/components/ui/button'
@@ -39,6 +41,14 @@ export default function DashboardPage() {
           <DailyExpenseChartSkeleton />
         ) : (
           <DailyExpenseChart expenses={expenses} />
+        )}
+      </section>
+
+      <section>
+        {isLoading ? (
+          <ExpenseChartsSkeleton />
+        ) : (
+          <ExpenseCharts expenses={expenses} />
         )}
       </section>
 
