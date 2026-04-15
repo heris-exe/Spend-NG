@@ -1,3 +1,7 @@
+-- Source of truth for shared web/mobile schema.
+-- After editing this file, run `npm run schema:sync-mobile` from spendng-web.
+-- You can also run `npm run schema:pull-from-web` from spendng-mobile.
+--
 -- Run this in Supabase: SQL Editor → New query → paste and run.
 -- This creates the expenses table and Row Level Security so each user only sees their own data.
 
@@ -34,4 +38,33 @@ create policy "Users can update own expenses"
 
 create policy "Users can delete own expenses"
   on public.expenses for delete
+  using (auth.uid() = user_id);
+
+-- Table: one weekly budget amount per user (global across categories)
+create table if not exists public.weekly_budgets (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null unique references auth.users (id) on delete cascade,
+  amount numeric(12,2) not null check (amount >= 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Row Level Security for budgets
+alter table public.weekly_budgets enable row level security;
+
+create policy "Users can read own weekly budget"
+  on public.weekly_budgets for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert own weekly budget"
+  on public.weekly_budgets for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update own weekly budget"
+  on public.weekly_budgets for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "Users can delete own weekly budget"
+  on public.weekly_budgets for delete
   using (auth.uid() = user_id);

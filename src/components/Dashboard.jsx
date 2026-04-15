@@ -117,6 +117,60 @@ export default function Dashboard({ expenses }) {
   )
 }
 
+export function WeeklyBudgetCard({ weeklyBudgetAmount, weeklySpent, weeklyRemaining, weeklyProgress }) {
+  const hasBudget = weeklyBudgetAmount != null
+  const clampedProgress = Math.max(0, Math.min(weeklyProgress || 0, 100))
+  const isOverBudget = (weeklyRemaining || 0) < 0
+
+  return (
+    <Card className="border-border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Weekly budget</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {hasBudget ? 'Spent vs budget (Sunday-Saturday)' : 'Set a weekly budget to track your pace'}
+          </p>
+        </div>
+      </div>
+
+      {hasBudget ? (
+        <div className="mt-4 space-y-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <div>
+              <p className="text-xs text-muted-foreground">Budget</p>
+              <p className="text-sm font-semibold tabular-nums">{formatAmount(weeklyBudgetAmount)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Spent</p>
+              <p className="text-sm font-semibold tabular-nums">{formatAmount(weeklySpent)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">{isOverBudget ? 'Over by' : 'Remaining'}</p>
+              <p className={`text-sm font-semibold tabular-nums ${isOverBudget ? 'text-destructive' : ''}`}>
+                {formatAmount(Math.abs(weeklyRemaining || 0))}
+              </p>
+            </div>
+          </div>
+
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className={`h-full rounded-full transition-all ${isOverBudget ? 'bg-destructive' : 'bg-primary'}`}
+              style={{ width: `${clampedProgress}%` }}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {clampedProgress.toFixed(0)}% used
+          </p>
+        </div>
+      ) : (
+        <p className="mt-4 text-sm text-muted-foreground">
+          No weekly budget set yet.
+        </p>
+      )}
+    </Card>
+  )
+}
+
 export function DashboardSkeleton() {
   return (
     <section className="space-y-5">

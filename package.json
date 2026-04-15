@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "schema:sync-mobile": "node scripts/sync-mobile-schema.mjs",
+    "schema:check-mobile": "node scripts/check-mobile-schema-sync.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",

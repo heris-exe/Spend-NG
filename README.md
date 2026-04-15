@@ -45,6 +45,15 @@ To use the app on multiple devices with the same data:
 4. In Supabase: **SQL Editor** — run the script in `supabase/schema.sql` to create the `expenses` table and Row Level Security (so each user only sees their own data).
 5. Restart the dev server (`npm run dev`) and reload the app. Sign up with email/password; your expenses will sync across any device where you sign in.
 
+### Shared schema with `spendng-mobile`
+
+If web and mobile point to the same Supabase project, keep one schema source of truth in this repo:
+
+- Canonical file: `supabase/schema.sql` (web)
+- Sync to mobile with: `npm run schema:sync-mobile`
+- Verify sync status with: `npm run schema:check-mobile`
+- Mobile can also pull from here with: `npm run schema:pull-from-web` (run inside `spendng-mobile`)
+
 ## Build for production
 
 ```bash

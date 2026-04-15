@@ -3,14 +3,16 @@
  * Data is loaded from and saved to Supabase so it syncs across devices for the signed-in user.
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   fetchExpenses,
   createExpense,
   updateExpense,
   deleteExpense,
 } from '../services/expenseApi'
+import { fetchWeeklyBudget, upsertWeeklyBudget } from '../services/budgetApi'
 import { useAuth } from '@/contexts/AuthContext'
+import { getCurrentWeekRangeYmd } from '@/utils/helpers'
 
 function isAuthError(error) {
   const msg = error?.message?.toLowerCase() ?? ''
@@ -28,11 +30,18 @@ export function useExpenses() {
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
   const [importProgress, setImportProgress] = useState(null)
+  const [weeklyBudgetAmount, setWeeklyBudgetAmountState] = useState(null)
+  const [isBudgetSaving, setIsBudgetSaving] = useState(false)
+  const [budgetError, setBudgetError] = useState(null)
 
   const loadExpenses = useCallback(async () => {
     setIsLoading(true)
     setLoadError(null)
-    const { data, error } = await fetchExpenses()
+    setBudgetError(null)
+    const [{ data, error }, { data: budgetData, error: budgetLoadError }] = await Promise.all([
+      fetchExpenses(),
+      fetchWeeklyBudget(),
+    ])
     setIsLoading(false)
     if (error) {
       if (isAuthError(error)) {
@@ -45,6 +54,12 @@ export function useExpenses() {
       return
     }
     setExpenses(data || [])
+    if (budgetLoadError) {
+      setBudgetError(budgetLoadError?.message ?? 'Could not load weekly budget.')
+      setWeeklyBudgetAmountState(null)
+    } else {
+      setWeeklyBudgetAmountState(budgetData?.amount ?? null)
+    }
   }, [signOut, setSessionMessage])
 
   useEffect(() => {
@@ -128,6 +143,38 @@ export function useExpenses() {
     setTimeout(() => setImportProgress(null), 5000)
   }
 
+  const setWeeklyBudgetAmount = async (amount) => {
+    setIsBudgetSaving(true)
+    setBudgetError(null)
+    const numeric = Number(amount)
+    if (!Number.isFinite(numeric) || numeric < 0) {
+      setIsBudgetSaving(false)
+      throw new Error('Weekly budget must be zero or greater.')
+    }
+    const { data, error } = await upsertWeeklyBudget(numeric)
+    setIsBudgetSaving(false)
+    if (error) {
+      setBudgetError(error?.message ?? 'Could not save weekly budget.')
+      throw error
+    }
+    setWeeklyBudgetAmountState(data?.amount ?? 0)
+  }
+
+  const weeklySpent = useMemo(() => {
+    const { weekStartStr, weekEndStr } = getCurrentWeekRangeYmd()
+    return expenses.reduce((sum, expense) => {
+      if (expense.date >= weekStartStr && expense.date <= weekEndStr) {
+        return sum + (Number(expense.amount) || 0)
+      }
+      return sum
+    }, 0)
+  }, [expenses])
+  const weeklyRemaining = weeklyBudgetAmount != null ? weeklyBudgetAmount - weeklySpent : null
+  const weeklyProgress =
+    weeklyBudgetAmount != null && weeklyBudgetAmount > 0
+      ? Math.min((weeklySpent / weeklyBudgetAmount) * 100, 100)
+      : 0
+
   return {
     expenses,
     editingExpense,
@@ -140,6 +187,12 @@ export function useExpenses() {
     loadError,
     loadExpenses,
     importProgress,
+    weeklyBudgetAmount,
+    weeklySpent,
+    weeklyRemaining,
+    weeklyProgress,
+    isBudgetSaving,
+    budgetError,
     openForm: () => setFormOpen(true),
     closeModal,
     handleAdd,
@@ -148,5 +201,6 @@ export function useExpenses() {
     closeDeleteConfirm,
     confirmDelete,
     importExpenses,
+    setWeeklyBudgetAmount,
   }
 }

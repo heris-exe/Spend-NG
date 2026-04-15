@@ -4,7 +4,7 @@
  */
 
 import { Link } from 'react-router-dom'
-import Dashboard, { DashboardSkeleton } from '@/components/Dashboard'
+import Dashboard, { DashboardSkeleton, WeeklyBudgetCard } from '@/components/Dashboard'
 import SmartInsights, { SmartInsightsSkeleton } from '@/components/SmartInsights'
 import {
   DailyExpenseChart,
@@ -17,7 +17,14 @@ import { Button } from '@/components/ui/button'
 import { Wallet } from 'lucide-react'
 
 export default function DashboardPage() {
-  const { expenses, isLoading } = useExpenseContext()
+  const {
+    expenses,
+    isLoading,
+    weeklyBudgetAmount,
+    weeklySpent,
+    weeklyRemaining,
+    weeklyProgress,
+  } = useExpenseContext()
 
   return (
     <div className="flex flex-col gap-6 sm:gap-10">
@@ -30,6 +37,17 @@ export default function DashboardPage() {
           <Dashboard expenses={expenses} />
         )}
       </section>
+
+      {!isLoading && (
+        <section>
+          <WeeklyBudgetCard
+            weeklyBudgetAmount={weeklyBudgetAmount}
+            weeklySpent={weeklySpent}
+            weeklyRemaining={weeklyRemaining}
+            weeklyProgress={weeklyProgress}
+          />
+        </section>
+      )}
 
       <section className="grid grid-cols-1 gap-6 sm:gap-10 lg:grid-cols-2 lg:items-stretch">
         {isLoading ? (
