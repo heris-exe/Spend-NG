@@ -3,7 +3,7 @@
  * Uses the same card and form styles as the rest of the app.
  */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -39,13 +39,18 @@ function GoogleIcon({ className }) {
   )
 }
 
-export function AuthScreen({ onSignIn, onSignUp, onSignInWithGoogle, onForgotPassword, isLoading, error, message, sessionMessage }) {
+export function AuthScreen({ onSignIn, onSignUp, onSignInWithGoogle, onForgotPassword, isLoading, error, message, sessionMessage, rememberMeDefault = true }) {
   const [isSignUp, setIsSignUp] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [forgotLoading, setForgotLoading] = useState(false)
   const [forgotMessage, setForgotMessage] = useState(null)
+  const [rememberMe, setRememberMe] = useState(rememberMeDefault)
+
+  useEffect(() => {
+    setRememberMe(rememberMeDefault)
+  }, [rememberMeDefault])
 
   const displayMessage = sessionMessage ?? message
 
@@ -54,7 +59,7 @@ export function AuthScreen({ onSignIn, onSignUp, onSignInWithGoogle, onForgotPas
     if (isSignUp) {
       await onSignUp(email, password)
     } else {
-      await onSignIn(email, password)
+      await onSignIn(email, password, rememberMe)
     }
   }
 
@@ -182,6 +187,21 @@ export function AuthScreen({ onSignIn, onSignUp, onSignInWithGoogle, onForgotPas
                   minLength={6}
                 />
               </div>
+              {!isSignUp && (
+                <div className="space-y-1">
+                  <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />
+                    Remember me
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    Off: you will be signed out when this browser is closed.
+                  </p>
+                </div>
+              )}
               {!isSignUp && onForgotPassword && (
                 <div className="text-right">
                   <button

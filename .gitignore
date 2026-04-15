@@ -34,3 +34,6 @@ Thumbs.db
 
 # Optional: uncomment if you keep Excel files in the project
 # *.xlsx
+
+# Supabase local CLI state (do not commit)
+supabase/.temp/

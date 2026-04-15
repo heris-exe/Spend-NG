@@ -19,17 +19,18 @@ function App() {
     resetPasswordForEmail,
     sessionMessage,
     setSessionMessage,
+    rememberMeDefault,
   } = useAuth()
   const [authLoading, setAuthLoading] = useState(false)
   const [authError, setAuthError] = useState(null)
   const [authMessage, setAuthMessage] = useState(null)
 
-  const handleSignIn = async (email, password) => {
+  const handleSignIn = async (email, password, rememberMe) => {
     setAuthError(null)
     setAuthMessage(null)
     setSessionMessage?.(null)
     setAuthLoading(true)
-    const { error } = await signIn(email, password)
+    const { error } = await signIn(email, password, rememberMe)
     setAuthLoading(false)
     if (error) setAuthError(error)
   }
@@ -85,6 +86,7 @@ function App() {
         error={authError}
         message={authMessage}
         sessionMessage={sessionMessage}
+        rememberMeDefault={rememberMeDefault}
       />
     )
   }

@@ -4,7 +4,7 @@
  */
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { browserStorage, supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
 
@@ -30,8 +30,9 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = async (email, password) => {
+  const signIn = async (email, password, rememberMe = true) => {
     if (!supabase) return { error: new Error('Supabase not configured') }
+    browserStorage.setRememberMe(rememberMe)
     return supabase.auth.signInWithPassword({ email, password })
   }
 
@@ -88,6 +89,7 @@ export function AuthProvider({ children }) {
     isConfigured: !!supabase,
     sessionMessage,
     setSessionMessage,
+    rememberMeDefault: browserStorage.getRememberMe(),
     signIn,
     signUp,
     signOut,
